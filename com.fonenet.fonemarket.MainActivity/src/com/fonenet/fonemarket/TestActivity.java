@@ -14,7 +14,7 @@ public class TestActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_test, menu);
+//        getMenuInflater().inflate(R.menu.activity_test, menu);
         return true;
     }
 }
