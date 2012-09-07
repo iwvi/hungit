@@ -104,9 +104,10 @@ public class MyAdapter extends BaseAdapter {
                  // download file
                 new Thread(){
                 	public void run(){
-                		//try {
+                		//try {  http://192.168.7.76:8080/glxt/
                 			 HttpDownloader downloader = new HttpDownloader(uiHandler);  
-                	            int lrc = downloader.downFile("http://192.168.7.66/Market.apk","test/");  
+                	         //   int lrc = downloader.downFile("http://192.168.7.66/Market.apk","test/");  
+                	            int lrc = downloader.downFile("http://192.168.7.76:8080/glxt/interface/usstore.jsp?projectid=76&type=3&date=0&version=1&imsi=9001010123456789","test/","",FoneConstValue.FILE_TYPE_STORE_APP); 
                 	            System.out.println(lrc);  
         					//下载文件，参数：第一个URL，第二个存放路径
         			//	} catch (ClientProtocolException e) {

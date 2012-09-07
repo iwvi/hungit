@@ -21,8 +21,10 @@ public class Tab1Activity extends Activity {
 */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;  
 import java.util.HashMap;  
+import java.util.zip.ZipException;
   
 import android.app.ListActivity;  
 import android.content.Intent;
@@ -32,13 +34,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;  
 import android.view.View;  
-import android.widget.ListView;  
+import android.widget.ListView;
   
 public class Tab1Activity extends ListActivity {  
 
     @Override  
     public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
+        
+        // download file
+      
         
         handler = new Handler()
   	  {
@@ -47,32 +52,62 @@ public class Tab1Activity extends ListActivity {
   	    {//定义一个Handler，用于处理下载线程与UI间通讯
   	      if (!Thread.currentThread().isInterrupted())
   	      {
-  	        switch (msg.what)
-  	        {
-  	          case 0:
-  	          //  pb.setMax(fileSize);
-  	          case 1:
-  	           // pb.setProgress(downLoadFileSize);
-  	          //  int result = downLoadFileSize * 100 / fileSize;
-  	          //  tv.setText(result + "%");
-  	          {
-  	        	  String fileName = (String)msg.obj;
-  	        	installApk(fileName);
-  	          }
-  	            break;
-  	          case 2:
-  	         //   Toast.makeText(main.this, "文件下载完成", 1).show();
-  	            break;
-
-  	          case -1:
-  	         //   String error = msg.getData().getString("error");
-  	         //   Toast.makeText(main.this, error, 1).show();
-  	            break;
-  	        }
+  	    	  int fileType = msg.what;
+  	    	  String fileName = (String)msg.obj;
+  	    	  if(fileType == FoneConstValue.FILE_TYPE_STORE_CONFIG)
+  	    	  {
+  	    		  if(msg.arg1 == FoneConstValue.FILE_DOWNLOAD_SUCCSS)
+  	    		  {
+  	    			try {
+  	    			
+  	    				File zFile = new File(fileName);
+  	    				
+						FileUtils.upZipFile(zFile,zFile.getParent()+File.separator+FileUtils.getFileNameEx(fileName));
+					} catch (ZipException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+  	    		  
+  	    		  }
+	  	       
+  	    	  }
+  	    	  else if(fileType == FoneConstValue.FILE_TYPE_STORE_APP)
+  	    	  {
+  	    		if(msg.arg1 == FoneConstValue.FILE_DOWNLOAD_SUCCSS)
+	    		  {
+  	    			 
+  	  	        	installApk(fileName);
+	    		  
+	    		  }
+  	    		  
+  	    	  }
   	      }
   	      super.handleMessage(msg);
   	    }
   	  };
+  	  
+  	   new Thread(){
+       	public void run(){
+       		//try {  http://192.168.7.76:8080/glxt/
+       			 HttpDownloader downloader = new HttpDownloader(handler);  
+       	         //   int lrc = downloader.downFile("http://192.168.7.66/Market.apk","test/");  
+       	            int lrc = downloader.downFile(FoneConstValue.STORE_CONFIG_URL,FoneConstValue.CONFIG_DOWNLOADPATH,FoneConstValue.STORE_CONFIG_FILENAME,FoneConstValue.FILE_TYPE_STORE_CONFIG); 
+       	            System.out.println(lrc);  
+					//下载文件，参数：第一个URL，第二个存放路径
+			//	} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+				//	e.printStackTrace();
+			//	} catch (IOException e) {
+					// TODO Auto-generated catch block
+			//		e.printStackTrace();
+			//	}
+       	}
+       }.start();
+       
+
         // 获取虚拟的数据，数据的格式有严格的要求哦  
         ArrayList<HashMap<String, Object>> data = getData();  
         //模仿SimpleAdapter实现的自己的adapter  
