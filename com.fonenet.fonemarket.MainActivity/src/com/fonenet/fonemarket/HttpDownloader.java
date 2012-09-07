@@ -69,7 +69,7 @@ public class HttpDownloader {
      *       0:文件下载成功  
      *       1:文件已经存在  
      */  
-    public int downFile(String urlStr, String path/*, String fileName*/){  
+    public int downFile(String urlStr, String path, String fileName,int fileType){  
         InputStream inputStream = null;  
         try { 
         	
@@ -79,12 +79,12 @@ public class HttpDownloader {
             	fileUtils.removeSDFile(path + fileName);
                // return 1;  
             } else { */ 
-                inputStream = getInputStreamFromURL(urlStr); 
+                inputStream = getInputStreamFromURL(urlStr,fileName); 
             	//URL myURL = new URL(urlStr);
             	//URLConnection conn = myURL.openConnection();
             	//conn.connect();
             	//inputStream = conn.getInputStream();
-                FileUtils fileUtils = new FileUtils(mHandler);    
+                FileUtils fileUtils = new FileUtils(mHandler,fileType);    
                 if(fileUtils.isFileExist(path + fileName)){  
                 	fileUtils.removeSDFile(path + fileName);  //for test
                    // return 1;  
@@ -114,7 +114,7 @@ public class HttpDownloader {
      * @param urlStr  
      * @return  
      */  
-    public InputStream getInputStreamFromURL(String urlStr) {  
+    public InputStream getInputStreamFromURL(String urlStr,String szfileName) {  
         HttpURLConnection urlConn = null;  
         InputStream inputStream = null;  
         try {  
@@ -122,7 +122,14 @@ public class HttpDownloader {
             urlConn = (HttpURLConnection)url.openConnection();  
             inputStream = urlConn.getInputStream(); 
             this.fileSize = urlConn.getContentLength();
-            this.fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1);
+            if(szfileName.isEmpty())
+            {
+            	this.fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1);
+            }
+            else
+            {
+            	this.fileName = szfileName;
+            }
               
         } catch (MalformedURLException e) {  
             e.printStackTrace();  
