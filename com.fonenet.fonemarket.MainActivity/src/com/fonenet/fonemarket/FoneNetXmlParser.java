@@ -57,6 +57,13 @@ public class FoneNetXmlParser {
 	Integer pageNum;
 	ArrayList<Page> pages;
 
+	public ArrayList<Page> getPages() {
+		return pages;
+	}
+	
+	public Integer getPageNum() {
+		return pageNum;
+	}
 	@SuppressLint("UseValueOf")
 	public ArrayList<Page> readXML(InputStream inStream) {
 		XmlPullParser parser = Xml.newPullParser();
