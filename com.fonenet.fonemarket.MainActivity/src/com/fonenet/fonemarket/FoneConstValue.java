@@ -12,6 +12,7 @@ public class FoneConstValue {
 	public static final int FILE_TYPE_NODOWNLOAD = 3;
 	public static final int FILE_DOWNLOAD_ERR = 1;
 	public static final int FILE_DOWNLOAD_SUCCSS = 2;
+	public static final String XML_FOLDER = Environment.getExternalStorageDirectory().getPath()+"/FoneNetXml/";
 	static
 	{
 		STORE_CONFIG_FILENAME = "store_config.zip";
