@@ -22,11 +22,15 @@ package com.fonenet.fonemarket;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+
 import java.util.zip.ZipException;
+import java.util.Map;
+
+import com.fonenet.fonemarket.FoneNetXmlParser.Page;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -47,6 +51,8 @@ import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
 
 public class Tab1Activity extends ListActivity {
+
+	private FoneNetXmlParser parser ;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +136,7 @@ public class Tab1Activity extends ListActivity {
 		};
 
 		downloadConfigFile(); // zb add download store config xml
+		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER+"store-recommend.xml");
 		// 获取虚拟的数据，数据的格式有严格的要求哦
 		ArrayList<HashMap<String, Object>> data = getData();
 		// 模仿SimpleAdapter实现的自己的adapter
@@ -159,15 +166,32 @@ public class Tab1Activity extends ListActivity {
 	 */
 	private ArrayList<HashMap<String, Object>> getData() {
 		ArrayList<HashMap<String, Object>> arrayList = new ArrayList<HashMap<String, Object>>();
-		for (int i = 0; i < 3; i++) {
-			HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
-			tempHashMap.put("image", R.drawable.ic_launcher);
-			tempHashMap.put("title", "标题" + i);
-			tempHashMap.put("info", "描述性信息");
+		if(parser != null){
+			
+			Page page = parser.getPages().get(0);
+			int num = parser.getPages().get(0).getItemNum();
+			for(int i=0;i<num;i++){
+				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
+				tempHashMap.put("image", R.drawable.ic_launcher);
+				String title = page.items.get(i).name;
+				tempHashMap.put("title", title);
+				tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
+				String info = page.items.get(i).intro;
+				tempHashMap.put("info", info);
+				arrayList.add(tempHashMap);
+			}
+		}
+		else {
+			for (int i = 0; i < 3; i++) {
+				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
+				tempHashMap.put("image", R.drawable.ic_launcher);
+				tempHashMap.put("title", "标题" + i);
+				tempHashMap.put("info", "描述性信息");
 			tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
-			// tempHashMap.put("title", "2222");
-			// tempHashMap.put("info", "描述性信息");
-			arrayList.add(tempHashMap);
+				// tempHashMap.put("title", "2222");
+				// tempHashMap.put("info", "描述性信息");
+				arrayList.add(tempHashMap);
+			}
 		}
 		return arrayList;
 	}
