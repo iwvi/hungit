@@ -166,7 +166,7 @@ public class Tab1Activity extends ListActivity {
 	 */
 	private ArrayList<HashMap<String, Object>> getData() {
 		ArrayList<HashMap<String, Object>> arrayList = new ArrayList<HashMap<String, Object>>();
-		if(parser != null){
+		if(parser != null && parser.getPages() != null){
 			
 			Page page = parser.getPages().get(0);
 			int num = parser.getPages().get(0).getItemNum();
