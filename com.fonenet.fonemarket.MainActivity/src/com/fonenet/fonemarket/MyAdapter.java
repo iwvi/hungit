@@ -16,6 +16,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fonenet.fonemarket.download.Downloader;
+import com.fonenet.fonemarket.download.LoadInfo;
+
 /**
  * @author chenzheng_java
  * @description 该类的部分实现模仿了SimpleAdapter
@@ -36,12 +39,12 @@ public class MyAdapter extends BaseAdapter {
 	private LayoutInflater layoutInflater;
 	private Context context;
 
-	public MyAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
+	public MyAdapter(Context context,Handler handler, ArrayList<HashMap<String, Object>> data) {
 
 		this.context = context;
 		this.data = data;
 		this.layoutInflater = LayoutInflater.from(context);
-		this.uiHandler = ((Tab1Activity) context).handler;
+		this.uiHandler = handler;
 	}
 
 	/**
@@ -78,6 +81,7 @@ public class MyAdapter extends BaseAdapter {
 			zuJian.titleView = (TextView) convertView.findViewById(R.id.title);
 			zuJian.infoView = (TextView) convertView.findViewById(R.id.info);
 			zuJian.button = (Button) convertView.findViewById(R.id.view_btn);
+			zuJian.url = (String) data.get(position).get("url");
 			// 这里要注意，是使用的tag来存储数据的。
 			convertView.setTag(zuJian);
 		} else {
@@ -89,43 +93,46 @@ public class MyAdapter extends BaseAdapter {
 				.get("image"));
 		zuJian.titleView.setText((String) data.get(position).get("title"));
 		zuJian.infoView.setText((String) data.get(position).get("info"));
-		zuJian.button.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				int p = position;
-				String z = (String) data.get(position).get("title");
-
-				showInfo(p);
-
-				// download file
-				new Thread() {
-					public void run() {
-						// try { http://192.168.7.76:8080/glxt/
-						HttpDownloader downloader = new HttpDownloader(
-								uiHandler);
-						// int lrc =
-						// downloader.downFile("http://192.168.7.66/Market.apk","test/");
-						int lrc = downloader
-								.downFile(
-										"http://192.168.7.76:8080/glxt/interface/usstore.jsp?projectid=76&type=3&date=0&version=1&imsi=9001010123456789",
-										"test/", "",
-										FoneConstValue.FILE_TYPE_STORE_APP);
-						System.out.println(lrc);
-						// 下载文件，参数：第一个URL，第二个存放路径
-						// } catch (ClientProtocolException e) {
-						// TODO Auto-generated catch block
-						// e.printStackTrace();
-						// } catch (IOException e) {
-						// TODO Auto-generated catch block
-						// e.printStackTrace();
-						// }
-					}
-				}.start();
-
-				// installApk(Environment.getExternalStorageDirectory()+"/test/Market.apk");
-			}
-
-		});
+		/*
+		 * zuJian.button.setOnClickListener(new OnClickListener(){
+		 * 
+		 * public void onClick(View v) { int p = position; String z =
+		 * (String)data.get(position).get("title");
+		 * 
+		 * 
+		 * showInfo(p);
+		 * 
+		 * // download file new Thread(){ public void run(){ //try {
+		 * http://192.168.7.76:8080/glxt/ HttpDownloader downloader = new
+		 * HttpDownloader(uiHandler); int lrc =
+		 * downloader.downFile("http://192.168.7.66/Market3.apk"
+		 * ,"test/","",FoneConstValue.FILE_TYPE_STORE_APP); // int lrc =
+		 * downloader.downFile(
+		 * "http://192.168.7.76:8080/glxt/interface/usstore.jsp?projectid=76&type=3&date=0&version=1&imsi=9001010123456789"
+		 * ,"test/","",FoneConstValue.FILE_TYPE_STORE_APP);
+		 * System.out.println(lrc); //下载文件，参数：第一个URL，第二个存放路径 // } catch
+		 * (ClientProtocolException e) { // TODO Auto-generated catch block //
+		 * e.printStackTrace(); // } catch (IOException e) { // TODO
+		 * Auto-generated catch block // e.printStackTrace(); // } } }.start();
+		 * {
+		 * 
+		 * String urlstr = "http://192.168.7.66/Market4.apk"; // String
+		 * localfile = SD_PATH + "test/okdown.apk"; // 设置下载线程数为4 int threadcount
+		 * = 1; // 初始化一个downloader下载器 // Downloader downloader =
+		 * downloaders.get(urlstr); // if (downloader == null) { Downloader
+		 * downloader = new Downloader(urlstr, "/mnt/sdcard/test/oktest.apk", 1,
+		 * context,uiHandler); // downloaders.put(urlstr, downloader); // } if
+		 * (downloader.isdownloading()) return; // 得到下载信息类的个数组成集合 LoadInfo
+		 * loadInfo = downloader.getDownloaderInfors(); // 显示进度条 //
+		 * showProgress(loadInfo, urlstr, v); // 调用方法开始下载 downloader.download();
+		 * }
+		 * 
+		 * //
+		 * installApk(Environment.getExternalStorageDirectory()+"/test/Market.apk"
+		 * ); }
+		 * 
+		 * });
+		 */
 		return convertView;
 	}
 
