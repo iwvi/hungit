@@ -29,6 +29,7 @@ public class FoneNetXmlParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Log.e("FoneError", fileName+"open error!");
+			pages = null;
 		}
 	}
 
