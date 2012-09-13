@@ -6,18 +6,13 @@ import java.util.HashMap;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.fonenet.fonemarket.download.Downloader;
-import com.fonenet.fonemarket.download.LoadInfo;
 
 /**
  * @author chenzheng_java
@@ -25,7 +20,7 @@ import com.fonenet.fonemarket.download.LoadInfo;
  */
 public class MyAdapter extends BaseAdapter {
 
-	Handler uiHandler;
+	// Handler uiHandler;
 
 	private ArrayList<HashMap<String, Object>> data;
 	/**
@@ -39,12 +34,11 @@ public class MyAdapter extends BaseAdapter {
 	private LayoutInflater layoutInflater;
 	private Context context;
 
-	public MyAdapter(Context context,Handler handler, ArrayList<HashMap<String, Object>> data) {
+	public MyAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
 
 		this.context = context;
 		this.data = data;
 		this.layoutInflater = LayoutInflater.from(context);
-		this.uiHandler = handler;
 	}
 
 	/**
