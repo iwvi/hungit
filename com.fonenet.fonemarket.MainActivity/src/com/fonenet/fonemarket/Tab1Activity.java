@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.zip.ZipException;
 
 import android.app.ListActivity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -86,7 +84,8 @@ public class Tab1Activity extends ListActivity {
 								downloaders.remove(url);
 								Buttons.get(url).setText("xia zai");
 								Buttons.remove(url);
-								installApk(localfile);
+								FoneNetUntils.installApk(localfile,
+										Tab1Activity.this);
 
 							}
 						}
@@ -108,7 +107,7 @@ public class Tab1Activity extends ListActivity {
 
 									File zFile = new File(filename);
 
-									FileUtils.upZipFile(zFile,
+									FoneNetUntils.upZipFile(zFile,
 											FoneConstValue.XML_FOLDER);
 								} catch (ZipException e) {
 									// TODO Auto-generated catch block
@@ -180,8 +179,7 @@ public class Tab1Activity extends ListActivity {
 				tempHashMap.put("title", "标题" + i);
 				tempHashMap.put("info", "描述性信息");
 				tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
-				// tempHashMap.put("title", "2222");
-				// tempHashMap.put("info", "描述性信息");
+
 				arrayList.add(tempHashMap);
 			}
 		}
@@ -192,18 +190,6 @@ public class Tab1Activity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 
 		Log.e("输出信息", "clickitem");
-	}
-
-	private void installApk(String paramString) {
-
-		File localFile = new File(paramString);
-		Intent localIntent = new Intent();
-		// localIntent.addFlags(268435456);
-		localIntent.setAction("android.intent.action.VIEW");
-		localIntent.setDataAndType(Uri.fromFile(localFile),
-				"application/vnd.android.package-archive");
-		this.startActivity(localIntent);
-		Log.e("success", "the end");
 	}
 
 	public void buttonOnClick(View v) {
