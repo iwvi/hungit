@@ -19,18 +19,11 @@ import android.util.Xml;
 public class FoneNetXmlParser {
 	// We don't use namespaces
 	private static final String ns = null;
-
+	String fName;
+	Context mContext;
 	FoneNetXmlParser(Context context, String fileName) {
-		FileInputStream inFS;
-		try {
-			inFS = new FileInputStream(fileName);
-			pages = readXML(inFS);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("FoneError", fileName+"open error!");
-			pages = null;
-		}
+		mContext = context;
+		fName = fileName;
 	}
 
 	public class Page {
@@ -82,6 +75,21 @@ public class FoneNetXmlParser {
 	public Integer getPageNum() {
 		return pageNum;
 	}
+	
+	public ArrayList<Page> readXML(String fileName) {
+		FileInputStream inFS;
+		try {
+			inFS = new FileInputStream(fileName);
+			pages = readXML(inFS);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("FoneError", fileName+"open error!");
+			pages = null;
+		}
+		return pages;
+	}
+	
 	@SuppressLint("UseValueOf")
 	public ArrayList<Page> readXML(InputStream inStream) {
 		XmlPullParser parser = Xml.newPullParser();

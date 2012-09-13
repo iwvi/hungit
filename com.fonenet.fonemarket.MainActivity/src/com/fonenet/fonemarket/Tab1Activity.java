@@ -137,6 +137,7 @@ public class Tab1Activity extends ListActivity {
 
 		downloadConfigFile(); // zb add download store config xml
 		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER+"store-recommend.xml");
+		parser.readXML(FoneConstValue.XML_FOLDER+"store-recommend.xml");
 		// 获取虚拟的数据，数据的格式有严格的要求哦
 		ArrayList<HashMap<String, Object>> data = getData();
 		// 模仿SimpleAdapter实现的自己的adapter
@@ -187,7 +188,7 @@ public class Tab1Activity extends ListActivity {
 				tempHashMap.put("image", R.drawable.ic_launcher);
 				tempHashMap.put("title", "标题" + i);
 				tempHashMap.put("info", "描述性信息");
-			tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
+				tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
 				// tempHashMap.put("title", "2222");
 				// tempHashMap.put("info", "描述性信息");
 				arrayList.add(tempHashMap);
