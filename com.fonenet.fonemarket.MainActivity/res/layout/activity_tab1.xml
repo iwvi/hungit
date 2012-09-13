@@ -15,7 +15,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/image"
-        android:layout_toLeftOf="@+id/view_btn"
         android:orientation="vertical"
        >
         <TextView  
@@ -43,7 +42,7 @@
 	        android:orientation="vertical" 
 	        android:layout_alignParentRight="true" > 
 	      <Button  
-	        android:id="@id/view_btn"  
+	        android:id="@+id/view_btn"  
 	        android:layout_width="wrap_content"   
 	        android:layout_height="wrap_content"  
 	        android:text="click me"  
