@@ -1,4 +1,4 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.adapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fonenet.fonemarket.R;
+import com.fonenet.fonemarket.activity.ZuJian;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
 

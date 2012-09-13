@@ -1,6 +1,8 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.activity;
 
 import java.util.HashMap;
+
+import com.fonenet.fonemarket.R;
 
 import android.os.Bundle;
 import android.app.Activity;
