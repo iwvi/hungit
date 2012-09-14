@@ -31,7 +31,8 @@ public class MainActivity extends /* FragmentActivity */TabActivity {
 		// mTabManager = new TabManager(this, tabHost, android.R.id.tabcontent);
 
 		// 第一个TAB
-		Intent intent = new Intent(this, Tab1Activity.class);// 新建一个Intent用作Tab1显示的内容
+		Intent intent = new Intent(this, StoreListActivity.class);// 新建一个Intent用作Tab1显示的内容
+		intent.putExtra("type", StoreListActivity.LIST_TYPE_RECOMMAND); 
 		TabSpec spec = tabHost.newTabSpec("tab1");// 新建一个 Tab
 		spec.setIndicator("Home");// 设置名称以及图标
 		spec.setContent(intent);// 设置显示的intent，这里的参数也可以是R.id.xxx

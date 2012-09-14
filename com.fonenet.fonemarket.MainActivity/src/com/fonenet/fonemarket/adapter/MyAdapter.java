@@ -27,7 +27,6 @@ import com.fonenet.fonemarket.download.LoadInfo;
  */
 public class MyAdapter extends BaseAdapter {
 
-	Handler uiHandler;
 
 	private ArrayList<HashMap<String, Object>> data;
 	/**
@@ -41,12 +40,11 @@ public class MyAdapter extends BaseAdapter {
 	private LayoutInflater layoutInflater;
 	private Context context;
 
-	public MyAdapter(Context context,Handler handler, ArrayList<HashMap<String, Object>> data) {
+	public MyAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
 
 		this.context = context;
 		this.data = data;
 		this.layoutInflater = LayoutInflater.from(context);
-		this.uiHandler = handler;
 	}
 
 	/**

@@ -40,7 +40,7 @@ public class Tab2Activity extends ListActivity {
 		// 获取虚拟的数据，数据的格式有严格的要求哦
 		ArrayList<HashMap<String, Object>> data = getData();
 		// 模仿SimpleAdapter实现的自己的adapter
-		MyAdapter adapter = new MyAdapter(this,null, data);
+		MyAdapter adapter = new MyAdapter(this, data);
 
 		/**
 		 * 有些人很迷糊，我们都知道vlist2.xml相当于存储一行数据的组件布局，我们在前边的代码中，都是有一个主布局文件main.xml的，
