@@ -1,4 +1,4 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.activity;
 
 /*
  import android.os.Bundle;
@@ -41,9 +41,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.fonenet.fonemarket.FoneNetXmlParser.Page;
+import com.fonenet.fonemarket.adapter.MyAdapter;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
+import com.fonenet.fonemarket.utils.FileUtils;
+import com.fonenet.fonemarket.utils.FoneConstValue;
+import com.fonenet.fonemarket.xmltools.FoneNetXmlParser;
+import com.fonenet.fonemarket.xmltools.Page;
 
 public class Tab1Activity extends ListActivity {
 
@@ -127,8 +131,8 @@ public class Tab1Activity extends ListActivity {
 		};
 
 		downloadConfigFile(); // zb add download store config xml
-		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER
-				+ "store-recommend.xml");
+		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER+"store-recommend.xml");
+		parser.readXML(FoneConstValue.XML_FOLDER+"store-recommend.xml");
 		// 获取虚拟的数据，数据的格式有严格的要求哦
 		ArrayList<HashMap<String, Object>> data = getData();
 		// 模仿SimpleAdapter实现的自己的adapter
@@ -165,10 +169,10 @@ public class Tab1Activity extends ListActivity {
 			for (int i = 0; i < num; i++) {
 				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
 				tempHashMap.put("image", R.drawable.ic_launcher);
-				String title = page.items.get(i).name;
+				String title = page.getItems().get(i).getName();
 				tempHashMap.put("title", title);
 				tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
-				String info = page.items.get(i).intro;
+				String info = page.getItems().get(i).getIntro();
 				tempHashMap.put("info", info);
 				arrayList.add(tempHashMap);
 			}

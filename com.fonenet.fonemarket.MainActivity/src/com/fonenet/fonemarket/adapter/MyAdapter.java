@@ -1,4 +1,4 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.adapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,6 @@ import android.widget.TextView;
  */
 public class MyAdapter extends BaseAdapter {
 
-	// Handler uiHandler;
 
 	private ArrayList<HashMap<String, Object>> data;
 	/**

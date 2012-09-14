@@ -1,4 +1,4 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.activity;
 
 import android.widget.Button;
 import android.widget.ImageView;

@@ -1,4 +1,4 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.activity;
 
 /*
  import android.os.Bundle;
@@ -23,6 +23,9 @@ package com.fonenet.fonemarket;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.fonenet.fonemarket.R;
+import com.fonenet.fonemarket.adapter.MyAdapter;
 
 import android.app.ListActivity;
 import android.os.Bundle;

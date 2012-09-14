@@ -1,16 +1,11 @@
-package com.fonenet.fonemarket;
+package com.fonenet.fonemarket.xmltools;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
+import com.fonenet.fonemarket.xmltools.Page;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
@@ -19,58 +14,12 @@ import android.util.Xml;
 public class FoneNetXmlParser {
 	// We don't use namespaces
 	private static final String ns = null;
-
-	FoneNetXmlParser(Context context, String fileName) {
-		FileInputStream inFS;
-		try {
-			inFS = new FileInputStream(fileName);
-			pages = readXML(inFS);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("FoneError", fileName+"open error!");
-			pages = null;
-		}
+	String fName;
+	Context mContext;
+	public FoneNetXmlParser(Context context, String fileName) {
+		mContext = context;
+		fName = fileName;
 	}
-
-	public class Page {
-		String name;
-		Integer itemNum;
-		ArrayList<Item> items;
-		Page(){
-			name = null;
-			itemNum = 0;
-			items = new ArrayList<Item>();
-		}
-		public void setName(String setName) {
-			name = setName;
-		}
-		public String getName() {
-			return name;
-		}
-		public Integer getItemNum(){
-			return itemNum;
-		}
-		public Integer addItem(Item item){
-			itemNum++;
-			items.add(item);
-			return itemNum;
-		}
-	};
-	public class Item {
-		String attr;
-		String binName;
-		Integer appSize;
-		String fee; //no use
-		String appId;
-		String iconName;
-		String intro;
-		String name; //item name
-		String start; //no use
-		String time;
-		String type;
-		String version;
-	};
 
 	Integer pageNum;
 	ArrayList<Page> pages;
@@ -82,6 +31,21 @@ public class FoneNetXmlParser {
 	public Integer getPageNum() {
 		return pageNum;
 	}
+	
+	public ArrayList<Page> readXML(String fileName) {
+		FileInputStream inFS;
+		try {
+			inFS = new FileInputStream(fileName);
+			pages = readXML(inFS);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("FoneError", fileName+"open error!");
+			pages = null;
+		}
+		return pages;
+	}
+	
 	@SuppressLint("UseValueOf")
 	public ArrayList<Page> readXML(InputStream inStream) {
 		XmlPullParser parser = Xml.newPullParser();
@@ -89,7 +53,7 @@ public class FoneNetXmlParser {
 			parser.setInput(inStream, "UTF-8");
 			int eventType = parser.getEventType();
 			Page currentPage = null;
-			Item curItem = null;
+			com.fonenet.fonemarket.xmltools.Page.Item curItem = null;
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				switch (eventType) {
 				case XmlPullParser.START_DOCUMENT:// 文档开始事件,可以进行数据初始化处理
@@ -103,7 +67,7 @@ public class FoneNetXmlParser {
 						currentPage.setName(new String(parser.getAttributeValue(null, "name")));
 					} else if (currentPage != null) {
 						if (name.equalsIgnoreCase("item")) {
-							curItem = new Item();
+							curItem = currentPage.new Item();
 							curItem.attr = new String(parser.getAttributeValue(null, "attr"));
 							curItem.binName = new String(parser.getAttributeValue(null, "bin"));
 							curItem.appSize = new Integer(parser.getAttributeValue(null, "binsize"));
