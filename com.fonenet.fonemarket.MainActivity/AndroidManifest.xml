@@ -37,6 +37,12 @@
             android:name=".activity.Tab2Activity"
             android:label="@string/title_activity_tab2" >
         </activity>
+        <activity android:name=".activity.StoreListActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
