@@ -22,19 +22,13 @@ package com.fonenet.fonemarket;
  */
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import java.util.zip.ZipException;
 import java.util.Map;
-
-import com.fonenet.fonemarket.FoneNetXmlParser.Page;
+import java.util.zip.ZipException;
 
 import android.app.ListActivity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -47,12 +41,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.fonenet.fonemarket.FoneNetXmlParser.Page;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
 
 public class Tab1Activity extends ListActivity {
 
-	private FoneNetXmlParser parser ;
+	private FoneNetXmlParser parser;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +84,8 @@ public class Tab1Activity extends ListActivity {
 								downloaders.remove(url);
 								Buttons.get(url).setText("xia zai");
 								Buttons.remove(url);
-								installApk(localfile);
+								FoneNetUntils.installApk(localfile,
+										Tab1Activity.this);
 
 							}
 						}
@@ -111,13 +107,8 @@ public class Tab1Activity extends ListActivity {
 
 									File zFile = new File(filename);
 
-									FileUtils
-											.upZipFile(
-													zFile,
-													zFile.getParent()
-															+ File.separator
-															+ FileUtils
-																	.getFileNameEx(filename));
+									FoneNetUntils.upZipFile(zFile,
+											FoneConstValue.XML_FOLDER);
 								} catch (ZipException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -136,11 +127,12 @@ public class Tab1Activity extends ListActivity {
 		};
 
 		downloadConfigFile(); // zb add download store config xml
-		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER+"store-recommend.xml");
+		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER
+				+ "store-recommend.xml");
 		// 获取虚拟的数据，数据的格式有严格的要求哦
 		ArrayList<HashMap<String, Object>> data = getData();
 		// 模仿SimpleAdapter实现的自己的adapter
-		MyAdapter adapter = new MyAdapter(this, handler, data);
+		MyAdapter adapter = new MyAdapter(this, data);
 
 		/**
 		 * 有些人很迷糊，我们都知道vlist2.xml相当于存储一行数据的组件布局，我们在前边的代码中，都是有一个主布局文件main.xml的，
@@ -170,7 +162,7 @@ public class Tab1Activity extends ListActivity {
 			
 			Page page = parser.getPages().get(0);
 			int num = parser.getPages().get(0).getItemNum();
-			for(int i=0;i<num;i++){
+			for (int i = 0; i < num; i++) {
 				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
 				tempHashMap.put("image", R.drawable.ic_launcher);
 				String title = page.items.get(i).name;
@@ -180,16 +172,14 @@ public class Tab1Activity extends ListActivity {
 				tempHashMap.put("info", info);
 				arrayList.add(tempHashMap);
 			}
-		}
-		else {
+		} else {
 			for (int i = 0; i < 3; i++) {
 				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
 				tempHashMap.put("image", R.drawable.ic_launcher);
 				tempHashMap.put("title", "标题" + i);
 				tempHashMap.put("info", "描述性信息");
-			tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
-				// tempHashMap.put("title", "2222");
-				// tempHashMap.put("info", "描述性信息");
+				tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
+
 				arrayList.add(tempHashMap);
 			}
 		}
@@ -199,19 +189,7 @@ public class Tab1Activity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 
-		Log.i("输出信息", v.toString());
-	}
-
-	private void installApk(String paramString) {
-
-		File localFile = new File(paramString);
-		Intent localIntent = new Intent();
-		// localIntent.addFlags(268435456);
-		localIntent.setAction("android.intent.action.VIEW");
-		localIntent.setDataAndType(Uri.fromFile(localFile),
-				"application/vnd.android.package-archive");
-		this.startActivity(localIntent);
-		Log.e("success", "the end");
+		Log.e("输出信息", "clickitem");
 	}
 
 	public void buttonOnClick(View v) {
@@ -262,6 +240,9 @@ public class Tab1Activity extends ListActivity {
 					handler, FoneConstValue.FILE_TYPE_STORE_CONFIG);
 			downloaders.put(urlstr, downloader);
 		}
+		downloader.delete(urlstr);
+		downloader.reset();
+
 		// 得到下载信息类的个数组成集合
 		downloader.getDownloaderInfors();
 
