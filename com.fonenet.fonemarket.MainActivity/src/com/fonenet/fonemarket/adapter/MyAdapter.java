@@ -3,23 +3,19 @@ package com.fonenet.fonemarket.adapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.fonenet.fonemarket.R;
+import com.fonenet.fonemarket.activity.ZuJian;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.fonenet.fonemarket.R;
-import com.fonenet.fonemarket.activity.ZuJian;
-import com.fonenet.fonemarket.download.Downloader;
-import com.fonenet.fonemarket.download.LoadInfo;
 
 /**
  * @author chenzheng_java
