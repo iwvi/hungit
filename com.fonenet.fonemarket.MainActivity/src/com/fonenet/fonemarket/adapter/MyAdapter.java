@@ -3,6 +3,9 @@ package com.fonenet.fonemarket.adapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.fonenet.fonemarket.R;
+import com.fonenet.fonemarket.activity.ZuJian;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
