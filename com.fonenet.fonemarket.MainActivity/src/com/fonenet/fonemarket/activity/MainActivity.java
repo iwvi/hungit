@@ -129,7 +129,7 @@ public class MainActivity extends /* FragmentActivity */TabActivity {
 			bsi = (DownloaderService) myIBinder.getService();
 			isBound = true;
 			Log.i("onbinder", "binded!!");
-			bsi.SetHandler(handler);
+			bsi.SetActivityHandler(handler);
 
 			bsi.downloadConfigFile();
 		};

@@ -163,11 +163,11 @@ public class DownloaderService extends Service {
 	 * service 提供的公共方法，在activity中可以调用
 	 */
 
-	public void SetHandler(Handler h) {
+	public void SetActivityHandler(Handler h) {
 		activityhandler = h;
 	}
 
-	public Handler GetHandler() {
+	public Handler GetActivityHandler() {
 		Log.i("DownloaderService", "GetHandler!");
 		return activityhandler;
 	}
@@ -206,7 +206,7 @@ public class DownloaderService extends Service {
 		Downloader downloader = downloaders.get(urlstr);
 		if (downloader == null) {
 			downloader = new Downloader(urlstr, localfile, threadcount, this,
-					activityhandler, FoneConstValue.FILE_TYPE_STORE_APP);
+					servicehandler, FoneConstValue.FILE_TYPE_STORE_APP);
 			downloaders.put(urlstr, downloader);
 		}
 
