@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.zip.ZipException;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -28,6 +31,8 @@ import com.fonenet.fonemarket.utils.FoneConstValue;
 import com.fonenet.fonemarket.utils.FoneNetUntils;
 import com.fonenet.fonemarket.xmltools.FoneNetXmlParser;
 import com.fonenet.fonemarket.xmltools.Page;
+import com.fonenet.fonemarket.service.DownloaderService;
+import com.fonenet.fonemarket.service.DownloaderService.MyIBinder;
 
 public class StoreListActivity extends ListActivity {
 
@@ -42,6 +47,7 @@ public class StoreListActivity extends ListActivity {
 	private FoneNetXmlParser parser;
 
 	private Handler handler;
+	private boolean isBound;
 	private Map<String, Downloader> downloaders = new HashMap<String, Downloader>();
 	// 存放与下载器对应的进度条
 	private Map<String, ProgressBar> ProgressBars = new HashMap<String, ProgressBar>();
@@ -54,71 +60,20 @@ public class StoreListActivity extends ListActivity {
 			public void handleMessage(Message msg) {// 定义一个Handler，用于处理下载线程与UI间通讯
 				if (!Thread.currentThread().isInterrupted()) {
 
-					if (msg.what == FoneConstValue.FILE_TYPE_STORE_APP) {
-						String url = (String) msg.obj;
-						int length = msg.arg1;
-						ProgressBar bar = ProgressBars.get(url);
-						if (bar != null) {
-							// 设置进度条按读取的length长度更新
-							bar.incrementProgressBy(length);
-							if (bar.getProgress() == bar.getMax()) {
-
-								String filename = url.substring(url
-										.lastIndexOf("/") + 1);
-								String localfile = FoneConstValue.CONFIG_DOWNLOADPATH
-										+ filename;
-								// Toast.makeText(this, "下载完成！", 0).show();
-								// 下载完成后清除进度条并将map中的数据清空
-								LinearLayout layout = (LinearLayout) bar
-										.getParent();
-								layout.removeView(bar);
-								ProgressBars.remove(url);
-								downloaders.get(url).delete(url);
-								downloaders.get(url).reset();
-								downloaders.remove(url);
-								Buttons.get(url).setText("xia zai");
-								Buttons.remove(url);
-								FoneNetUntils.installApk(localfile,
-										StoreListActivity.this);
-
-							}
-						}
-					} else if (msg.what == FoneConstValue.FILE_TYPE_STORE_CONFIG) {
-						String url = (String) msg.obj;
-						Downloader downloader = downloaders.get(url);
-						if (downloader != null) {
-							LoadInfo loadInfo = downloader
-									.getDownloaderInfors();
-							if (loadInfo.getFileSize() == loadInfo
-									.getComplete()) {
-
-								String filename = FoneConstValue.CONFIG_DOWNLOADPATH
-										+ FoneConstValue.STORE_CONFIG_FILENAME;
-								downloaders.get(url).delete(url);
-								downloaders.get(url).reset();
-								downloaders.remove(url);
-								try {
-
-									File zFile = new File(filename);
-
-									FoneNetUntils.upZipFile(zFile,
-											FoneConstValue.XML_FOLDER);
-								} catch (ZipException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-
-							}
-						}
-
-					}
+					Intent i = new Intent(StoreListActivity.this,
+							DownloaderService.class);
+					Log.i("xiao xi", "ok!!!");
+					doBindService(i);
 				}
 				super.handleMessage(msg);
 			}
 		};
+		{
+			Message msg = Message.obtain();
+			msg.what = 1;
+			handler.sendMessage(msg);
+			Log.i("onCreate", "mesage have sent!");
+		}
 	}
 
 	public void onStart() {
@@ -135,6 +90,51 @@ public class StoreListActivity extends ListActivity {
 		super.onRestart();
 	}
 
+	public void onStop() {
+		super.onStop();
+		doUnbindService();
+		finish();
+		Log.i("Onstop", "doUnbindService!");
+	}
+	private void doUnbindService() {
+		if (isBound) {
+			unbindService(myLocalServiceConnection);
+			isBound = false;
+		}
+	}
+
+	private void doBindService(Intent i) {
+		Log.i("bind", "begin to bind");
+
+		bindService(i, myLocalServiceConnection, Context.BIND_AUTO_CREATE);
+
+	}
+
+	private ServiceConnection myLocalServiceConnection = new ServiceConnection() {
+
+		private DownloaderService bsi;
+
+		public void onServiceConnected(android.content.ComponentName name,
+				android.os.IBinder service) {
+
+			// 因为 客户端 与 服务 在同一个进程内，这样一来，就可以知道参数 "service"的类型了，也就可以进行显示的强制类型转换了。
+			// 而如果 客户端与服务不在同一个进程中的话，那么此处是不可以进行显示强制类型转换的，
+			// 因为，通过Debug，可以发现此时传进来的 Service 的类型是 BinderProxy
+			MyIBinder myIBinder = (MyIBinder) service;
+			bsi = (DownloaderService) myIBinder.getService();
+			isBound = true;
+			Log.i("onbinder", "binded!!");
+			bsi.SetActivityHandler(handler);
+
+			bsi.downloadConfigFile();
+		};
+
+		public void onServiceDisconnected(android.content.ComponentName name) {
+
+			isBound = false;
+		};
+	};	
+	
 	public void updateListView() {
 		updateListView(listType);
 	}
