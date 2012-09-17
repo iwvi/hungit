@@ -41,13 +41,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
-import com.fonenet.fonemarket.FoneNetUntils;
 import com.fonenet.fonemarket.R;
 import com.fonenet.fonemarket.adapter.MyAdapter;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
-import com.fonenet.fonemarket.utils.FileUtils;
 import com.fonenet.fonemarket.utils.FoneConstValue;
+import com.fonenet.fonemarket.utils.FoneNetUntils;
 import com.fonenet.fonemarket.xmltools.FoneNetXmlParser;
 import com.fonenet.fonemarket.xmltools.Page;
 

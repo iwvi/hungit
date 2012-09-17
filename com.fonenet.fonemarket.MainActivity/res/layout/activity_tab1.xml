@@ -11,21 +11,28 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp" />
 
-    <Button
-        android:id="@+id/view_btn"
-        android:layout_width="80dp"
+    <LinearLayout
+        android:id="@+id/btn_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:focusable="false"
-        android:gravity="center"
-        android:onClick="buttonOnClick"
-        android:text="click me" />
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/view_btn"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:gravity="center"
+            android:onClick="buttonOnClick"
+            android:text="click me" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@id/view_btn"
+        android:layout_toLeftOf="@id/btn_layout"
         android:layout_toRightOf="@id/image"
         android:orientation="vertical" >
 
