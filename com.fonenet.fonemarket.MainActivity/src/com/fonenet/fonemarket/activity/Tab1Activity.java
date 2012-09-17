@@ -46,7 +46,6 @@ import com.fonenet.fonemarket.R;
 import com.fonenet.fonemarket.adapter.MyAdapter;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
-import com.fonenet.fonemarket.utils.FileUtils;
 import com.fonenet.fonemarket.utils.FoneConstValue;
 import com.fonenet.fonemarket.xmltools.FoneNetXmlParser;
 import com.fonenet.fonemarket.xmltools.Page;
@@ -132,9 +131,10 @@ public class Tab1Activity extends ListActivity {
 			}
 		};
 
-		downloadConfigFile(); // zb add download store config xml
-		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER+"store-recommend.xml");
-		parser.readXML(FoneConstValue.XML_FOLDER+"store-recommend.xml");
+		// downloadConfigFile(); // zb add download store config xml
+		parser = new FoneNetXmlParser(this, FoneConstValue.XML_FOLDER
+				+ "store-recommend.xml");
+		parser.readXML(FoneConstValue.XML_FOLDER + "store-recommend.xml");
 		// 获取虚拟的数据，数据的格式有严格的要求哦
 		ArrayList<HashMap<String, Object>> data = getData();
 		// 模仿SimpleAdapter实现的自己的adapter
@@ -164,8 +164,8 @@ public class Tab1Activity extends ListActivity {
 	 */
 	private ArrayList<HashMap<String, Object>> getData() {
 		ArrayList<HashMap<String, Object>> arrayList = new ArrayList<HashMap<String, Object>>();
-		if(parser != null && parser.getPages() != null){
-			
+		if (parser != null && parser.getPages() != null) {
+
 			Page page = parser.getPages().get(0);
 			int num = parser.getPages().get(0).getItemNum();
 			for (int i = 0; i < num; i++) {
@@ -233,29 +233,29 @@ public class Tab1Activity extends ListActivity {
 		downloader.download();
 	}
 
-	private void downloadConfigFile() {
-		String urlstr = FoneConstValue.STORE_CONFIG_URL;
-		String localfile = FoneConstValue.CONFIG_DOWNLOADPATH
-				+ FoneConstValue.STORE_CONFIG_FILENAME;
-		int threadcount = FoneConstValue.DOWNLOAD_THREAD_COUNT;
-
-		// 初始化一个downloader下载器
-		Downloader downloader = downloaders.get(urlstr);
-		if (downloader == null) {
-			downloader = new Downloader(urlstr, localfile, threadcount, this,
-					handler, FoneConstValue.FILE_TYPE_STORE_CONFIG);
-			downloaders.put(urlstr, downloader);
-		}
-		downloader.delete(urlstr);
-		downloader.reset();
-
-		// 得到下载信息类的个数组成集合
-		downloader.getDownloaderInfors();
-
-		// 调用方法开始下载
-		downloader.download();
-
-	}
+	// private void downloadConfigFile() {
+	// String urlstr = FoneConstValue.STORE_CONFIG_URL;
+	// String localfile = FoneConstValue.CONFIG_DOWNLOADPATH
+	// + FoneConstValue.STORE_CONFIG_FILENAME;
+	// int threadcount = FoneConstValue.DOWNLOAD_THREAD_COUNT;
+	//
+	// // 初始化一个downloader下载器
+	// Downloader downloader = downloaders.get(urlstr);
+	// if (downloader == null) {
+	// downloader = new Downloader(urlstr, localfile, threadcount, this,
+	// handler, FoneConstValue.FILE_TYPE_STORE_CONFIG);
+	// downloaders.put(urlstr, downloader);
+	// }
+	// downloader.delete(urlstr);
+	// downloader.reset();
+	//
+	// // 得到下载信息类的个数组成集合
+	// downloader.getDownloaderInfors();
+	//
+	// // 调用方法开始下载
+	// downloader.download();
+	//
+	// }
 
 	/**
 	 * 显示进度条
