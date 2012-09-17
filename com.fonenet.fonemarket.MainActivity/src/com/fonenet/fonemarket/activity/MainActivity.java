@@ -2,23 +2,30 @@ package com.fonenet.fonemarket.activity;
 
 import java.util.HashMap;
 
-import com.fonenet.fonemarket.R;
-
-import android.os.Bundle;
-import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
+import com.fonenet.fonemarket.R;
+import com.fonenet.fonemarket.service.DownloaderService;
+import com.fonenet.fonemarket.service.DownloaderService.MyIBinder;
+
 public class MainActivity extends /* FragmentActivity */TabActivity {
+
+	private boolean isBound;
+	private Handler handler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +39,7 @@ public class MainActivity extends /* FragmentActivity */TabActivity {
 
 		// 第一个TAB
 		Intent intent = new Intent(this, StoreListActivity.class);// 新建一个Intent用作Tab1显示的内容
-		intent.putExtra("type", StoreListActivity.LIST_TYPE_RECOMMAND); 
+		intent.putExtra("type", StoreListActivity.LIST_TYPE_RECOMMAND);
 		TabSpec spec = tabHost.newTabSpec("tab1");// 新建一个 Tab
 		spec.setIndicator("Home");// 设置名称以及图标
 		spec.setContent(intent);// 设置显示的intent，这里的参数也可以是R.id.xxx
@@ -57,6 +64,25 @@ public class MainActivity extends /* FragmentActivity */TabActivity {
 		 * 
 		 * };
 		 */
+		handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {// 定义一个Handler，用于处理下载线程与UI间通讯
+				if (!Thread.currentThread().isInterrupted()) {
+
+					Intent i = new Intent(MainActivity.this,
+							DownloaderService.class);
+					Log.i("xiao xi", "ok!!!");
+					doBindService(i);
+				}
+				super.handleMessage(msg);
+			}
+		};
+		{
+			Message msg = Message.obtain();
+			msg.what = 1;
+			handler.sendMessage(msg);
+			Log.i("onCreate", "mesage have sent!");
+		}
 
 	}
 
@@ -65,6 +91,54 @@ public class MainActivity extends /* FragmentActivity */TabActivity {
 		// getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
+
+	@Override
+	protected void onStop() {
+		doUnbindService();
+		super.onStop();
+		finish();
+		Log.i("Onstop", "doUnbindService!");
+
+	}
+
+	private void doUnbindService() {
+		if (isBound) {
+			unbindService(myLocalServiceConnection);
+			isBound = false;
+		}
+	}
+
+	private void doBindService(Intent i) {
+		Log.i("bind", "begin to bind");
+
+		bindService(i, myLocalServiceConnection, Context.BIND_AUTO_CREATE);
+
+	}
+
+	private ServiceConnection myLocalServiceConnection = new ServiceConnection() {
+
+		private DownloaderService bsi;
+
+		public void onServiceConnected(android.content.ComponentName name,
+				android.os.IBinder service) {
+
+			// 因为 客户端 与 服务 在同一个进程内，这样一来，就可以知道参数 "service"的类型了，也就可以进行显示的强制类型转换了。
+			// 而如果 客户端与服务不在同一个进程中的话，那么此处是不可以进行显示强制类型转换的，
+			// 因为，通过Debug，可以发现此时传进来的 Service 的类型是 BinderProxy
+			MyIBinder myIBinder = (MyIBinder) service;
+			bsi = (DownloaderService) myIBinder.getService();
+			isBound = true;
+			Log.i("onbinder", "binded!!");
+			bsi.SetHandler(handler);
+
+			bsi.downloadConfigFile();
+		};
+
+		public void onServiceDisconnected(android.content.ComponentName name) {
+
+			isBound = false;
+		};
+	};
 
 	/**
 	 * This is a helper class that implements a generic mechanism for
