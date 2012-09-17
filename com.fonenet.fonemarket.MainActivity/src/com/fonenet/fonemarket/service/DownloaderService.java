@@ -14,10 +14,10 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 
-import com.fonenet.fonemarket.FoneNetUntils;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
 import com.fonenet.fonemarket.utils.FoneConstValue;
+import com.fonenet.fonemarket.utils.FoneNetUntils;
 
 /**
  * @author zngbn
