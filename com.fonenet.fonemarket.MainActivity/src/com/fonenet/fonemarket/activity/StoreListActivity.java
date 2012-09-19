@@ -32,6 +32,7 @@ import com.fonenet.fonemarket.utils.FoneConstValue;
 import com.fonenet.fonemarket.utils.FoneNetUntils;
 import com.fonenet.fonemarket.xmltools.FoneNetXmlParser;
 import com.fonenet.fonemarket.xmltools.Page;
+import com.fonenet.fonemarket.xmltools.Page.Item;
 
 public class StoreListActivity extends ListActivity {
 
