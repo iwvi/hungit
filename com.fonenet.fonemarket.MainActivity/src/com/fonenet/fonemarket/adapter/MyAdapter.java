@@ -9,6 +9,7 @@ import com.fonenet.fonemarket.activity.ZuJian;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,9 +85,14 @@ public class MyAdapter extends BaseAdapter {
 			zuJian = (ZuJian) convertView.getTag();
 		}
 		// 绑定数据、以及事件触发
-
-		zuJian.imageView.setBackgroundResource((Integer) data.get(position)
-				.get("image"));
+		Object imgObj = data.get(position).get("image");
+		if(imgObj instanceof Integer) {
+			zuJian.imageView.setBackgroundResource((Integer)imgObj);
+		}
+		else if(imgObj instanceof Bitmap) {
+			zuJian.imageView.setImageBitmap((Bitmap)imgObj);
+		}
+		
 		zuJian.titleView.setText((String) data.get(position).get("title"));
 		zuJian.infoView.setText((String) data.get(position).get("info"));
 		/*

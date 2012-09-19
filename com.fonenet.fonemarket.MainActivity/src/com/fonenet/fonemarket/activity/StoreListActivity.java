@@ -8,6 +8,8 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -235,11 +237,18 @@ public class StoreListActivity extends ListActivity {
 			int num = parser.getPages().get(0).getItemNum();
 			for (int i = 0; i < num; i++) {
 				HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
-				tempHashMap.put("image", R.drawable.ic_launcher);
-				String title = page.getItems().get(i).getName();
+				Item item = page.getItems().get(i);
+				Bitmap bm = BitmapFactory.decodeFile(FoneConstValue.ICON_FOLDER+item.getIconName());
+				if(bm!=null){
+					tempHashMap.put("image", bm);
+				}
+				else {
+					tempHashMap.put("image", R.drawable.ic_launcher);
+				}
+				String title = item.getName();
 				tempHashMap.put("title", title);
 				tempHashMap.put("url", "http://192.168.7.66/Market4.apk");
-				String info = page.getItems().get(i).getIntro();
+				String info = item.getIntro();
 				tempHashMap.put("info", info);
 				arrayList.add(tempHashMap);
 			}
