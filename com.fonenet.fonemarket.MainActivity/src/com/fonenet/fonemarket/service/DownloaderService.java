@@ -46,6 +46,7 @@ public class DownloaderService extends Service {
 	@Override
 	public void onCreate() {
 
+		super.onCreate();
 		servicehandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {// 定义一个Handler，用于处理下载线程与UI间通讯
@@ -126,17 +127,17 @@ public class DownloaderService extends Service {
 
 	@Override
 	public void onDestroy() {
-
+		super.onDestroy();
 	}
 
 	@Override
 	public void onRebind(Intent intent) {
-
+		
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
+//		super.onStartCommand(intent, flags, startId);
 		return START_STICKY;
 	}
 

@@ -13,6 +13,7 @@ public class FoneConstValue {
 	public static final int FILE_DOWNLOAD_ERR = 1;
 	public static final int FILE_DOWNLOAD_SUCCSS = 2;
 	public static final String XML_FOLDER = Environment.getExternalStorageDirectory().getPath()+"/FoneNetXml/";
+	public static final String ICON_FOLDER = Environment.getExternalStorageDirectory().getPath()+"/FoneNetIcon/";
 	public static final int DOWNLOAD_THREAD_COUNT = 1;
 
 	static
