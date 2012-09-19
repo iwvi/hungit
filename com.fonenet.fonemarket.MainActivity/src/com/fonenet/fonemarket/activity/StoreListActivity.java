@@ -1,11 +1,8 @@
 package com.fonenet.fonemarket.activity;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipException;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -18,21 +15,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.LinearLayout.LayoutParams;
 
 import com.fonenet.fonemarket.R;
 import com.fonenet.fonemarket.adapter.MyAdapter;
 import com.fonenet.fonemarket.download.Downloader;
 import com.fonenet.fonemarket.download.LoadInfo;
+import com.fonenet.fonemarket.service.DownloaderService;
+import com.fonenet.fonemarket.service.DownloaderService.MyIBinder;
 import com.fonenet.fonemarket.utils.FoneConstValue;
 import com.fonenet.fonemarket.utils.FoneNetUntils;
 import com.fonenet.fonemarket.xmltools.FoneNetXmlParser;
 import com.fonenet.fonemarket.xmltools.Page;
-import com.fonenet.fonemarket.service.DownloaderService;
-import com.fonenet.fonemarket.service.DownloaderService.MyIBinder;
 
 public class StoreListActivity extends ListActivity {
 
@@ -50,8 +47,8 @@ public class StoreListActivity extends ListActivity {
 	private boolean isBound;
 	private Map<String, Downloader> downloaders = new HashMap<String, Downloader>();
 	// 存放与下载器对应的进度条
-	private Map<String, ProgressBar> ProgressBars = new HashMap<String, ProgressBar>();
-	private Map<String, Button> Buttons = new HashMap<String, Button>();
+	private static Map<String, ProgressBar> ProgressBars = new HashMap<String, ProgressBar>();
+	private static Map<String, Button> Buttons = new HashMap<String, Button>();
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,21 +56,82 @@ public class StoreListActivity extends ListActivity {
 			@Override
 			public void handleMessage(Message msg) {// 定义一个Handler，用于处理下载线程与UI间通讯
 				if (!Thread.currentThread().isInterrupted()) {
+					if (msg.what == FoneConstValue.MESSAGE_HANDLE_WAHT_DOWNLOADBINDSERVICE) {
 
-					Intent i = new Intent(StoreListActivity.this,
-							DownloaderService.class);
-					Log.i("xiao xi", "ok!!!");
-					doBindService(i);
+						Intent i = new Intent(StoreListActivity.this,
+								DownloaderService.class);
+						Log.i("handle", "bind service");
+
+					} else if (msg.what == FoneConstValue.MESSAGE_HANDLE_WAHT_DOWNLOADSTARTCNF) {
+						LoadInfo loadInfo = (LoadInfo) msg.obj;
+						String urlstr = loadInfo.getUrlstring();
+						ProgressBar bar = ProgressBars.get(urlstr);
+						if (Buttons.get(urlstr) == null) {
+							Log.e("StoreListHandler", "button is null!!!");
+							super.handleMessage(msg);
+							return;
+						}
+
+						Buttons.get(urlstr).setEnabled(true);
+
+						if (msg.arg1 == FoneConstValue.MESSAGE_HANDLE_ARG_DOWNLOADISPAUSE) {
+
+							Buttons.get(urlstr).setText("xia zai");
+							Log.i("handle", "downloader is pause!");
+						} else {
+							showProgress(loadInfo, urlstr,
+									(View) Buttons.get(urlstr));
+							Buttons.get(urlstr).setText("zan ting");
+						}
+
+						Log.i("handle",
+								"receive MESSAGE_HANDLE_WAHT_DOWNLOADSTARTCNF");
+
+					} else if (msg.what == FoneConstValue.MESSAGE_HANDLE_WAHT_DOWNLOADCONTINUE) {
+						Log.i("handle",
+								"receive MESSAGE_HANDLE_WAHT_DOWNLOADCONTINUE");
+
+						if (msg.arg2 == FoneConstValue.FILE_TYPE_STORE_APP) {
+							// LoadInfo loadInfo = (LoadInfo) msg.obj;
+							String url = (String) msg.obj;
+							int conpleteSize = msg.arg1;
+							ProgressBar bar = ProgressBars.get(url);
+							if (bar != null) {
+								// 设置进度条按读取的length长度更新
+								bar.setProgress(conpleteSize);
+								if (bar.getProgress() == bar.getMax()) {
+
+									String filename = url.substring(url
+											.lastIndexOf("/") + 1);
+									String localfile = FoneConstValue.CONFIG_DOWNLOADPATH
+											+ filename;
+									// Toast.makeText(this, "下载完成！", 0).show();
+									// 下载完成后清除进度条并将map中的数据清空
+									LinearLayout layout = (LinearLayout) bar
+											.getParent();
+									layout.removeView(bar);
+									ProgressBars.remove(url);
+
+									Buttons.get(url).setText("xia zai");
+									Buttons.get(url).setEnabled(true);
+									Buttons.remove(url);
+									FoneNetUntils.installApk(localfile,
+											StoreListActivity.this);
+
+								}
+							}
+						}
+
+					}
 				}
 				super.handleMessage(msg);
 			}
 		};
-		{
-			Message msg = Message.obtain();
-			msg.what = 1;
-			handler.sendMessage(msg);
-			Log.i("onCreate", "mesage have sent!");
-		}
+
+		Intent i = new Intent(StoreListActivity.this, DownloaderService.class);
+
+		doBindService(this.getApplicationContext(), i);
+
 	}
 
 	public void onStart() {
@@ -84,6 +142,7 @@ public class StoreListActivity extends ListActivity {
 
 		listType = intent.getIntExtra("type", LIST_TYPE_RECOMMAND);
 		updateListView();
+
 	}
 
 	public void onRestart() {
@@ -91,22 +150,25 @@ public class StoreListActivity extends ListActivity {
 	}
 
 	public void onStop() {
+
+		doUnbindService(this.getApplicationContext());
 		super.onStop();
-		doUnbindService();
-		finish();
+		// finish();
 		Log.i("Onstop", "doUnbindService!");
 	}
-	private void doUnbindService() {
+
+	private void doUnbindService(Context context) {
 		if (isBound) {
-			unbindService(myLocalServiceConnection);
+			context.unbindService(myLocalServiceConnection);
 			isBound = false;
 		}
 	}
 
-	private void doBindService(Intent i) {
+	private void doBindService(Context context, Intent i) {
 		Log.i("bind", "begin to bind");
 
-		bindService(i, myLocalServiceConnection, Context.BIND_AUTO_CREATE);
+		context.bindService(i, myLocalServiceConnection,
+				Context.BIND_AUTO_CREATE);
 
 	}
 
@@ -133,8 +195,8 @@ public class StoreListActivity extends ListActivity {
 
 			isBound = false;
 		};
-	};	
-	
+	};
+
 	public void updateListView() {
 		updateListView(listType);
 	}
@@ -199,36 +261,31 @@ public class StoreListActivity extends ListActivity {
 	public void buttonOnClick(View v) {
 		RelativeLayout layout = (RelativeLayout) (v.getParent().getParent());
 		ZuJian zuJian = (ZuJian) (layout.getTag());
-		int threadcount = FoneConstValue.DOWNLOAD_THREAD_COUNT;
-		String urlstr = zuJian.url;
-		String filename = urlstr.substring(urlstr.lastIndexOf("/") + 1);
-		String localfile = FoneConstValue.CONFIG_DOWNLOADPATH + filename;
 
-		// 初始化一个downloader下载器
-		Downloader downloader = downloaders.get(urlstr);
-		if (downloader == null) {
-			downloader = new Downloader(urlstr, localfile, threadcount, this,
-					handler, FoneConstValue.FILE_TYPE_STORE_APP);
-			downloaders.put(urlstr, downloader);
-		}
+		String urlstr = zuJian.url;
+
 		Button button = Buttons.get(urlstr);
+		// if (downLoadStatus == 1)
+		// return;
+
+		// downLoadStatus = 1;
 		if (button == null) {
 			button = (Button) v;
+			button.setEnabled(false);
+
 			Buttons.put(urlstr, button);
 		}
-		if (downloader.isdownloading()) {
-			button.setText("xia zai");
-			downloader.pause();
-			return;
-		}
+		// showProgress(null, urlstr, v);
 
-		button.setText("zan ting");
 		// 得到下载信息类的个数组成集合
-		LoadInfo loadInfo = downloader.getDownloaderInfors();
+		// LoadInfo loadInfo = DownloaderService.getDownloaderInfo(urlstr);
 		// 显示进度条
-		showProgress(loadInfo, urlstr, v);
-		// 调用方法开始下载
-		downloader.download();
+		// showProgress(loadInfo, urlstr, v);
+		Message msg = Message.obtain();
+		msg.what = FoneConstValue.MESSAGE_HANDLE_WAHT_DOWNLOADSTART;
+		msg.obj = urlstr;
+		DownloaderService.GetServiceHandler().sendMessage(msg);
+
 	}
 
 	/**
@@ -243,6 +300,7 @@ public class StoreListActivity extends ListActivity {
 			bar.setProgress(loadInfo.getComplete());
 			System.out.println(loadInfo.getFileSize() + "--"
 					+ loadInfo.getComplete());
+
 			ProgressBars.put(url, bar);
 
 			LinearLayout.LayoutParams params = new LayoutParams(
@@ -251,5 +309,39 @@ public class StoreListActivity extends ListActivity {
 			((LinearLayout) (v.getParent())).addView(bar, params);
 		}
 	}
+
+	public static void updateActivity(String urlstr, int length) {
+		ProgressBar bar = ProgressBars.get(urlstr);
+		if (bar != null) {
+			// 设置进度条按读取的length长度更新
+			bar.incrementProgressBy(length);
+			if (bar.getProgress() == bar.getMax()) {
+
+				String filename = urlstr.substring(urlstr.lastIndexOf("/") + 1);
+				String localfile = FoneConstValue.CONFIG_DOWNLOADPATH
+						+ filename;
+				// Toast.makeText(this, "下载完成！", 0).show();
+				// 下载完成后清除进度条并将map中的数据清空
+				LinearLayout layout = (LinearLayout) bar.getParent();
+				layout.removeView(bar);
+				ProgressBars.remove(urlstr);
+
+				Buttons.get(urlstr).setText("xia zai");
+				Buttons.remove(urlstr);
+				// FoneNetUntils.installApk(localfile,
+				// StoreListActivity.this);
+
+			}
+		}
+	}
+	//
+	// private void setProgressValue(ProgressBar bar, LoadInfo loadInfo) {
+	// if (loadInfo == null)
+	// return;
+	// bar.setMax(loadInfo.getFileSize());
+	// bar.setProgress(loadInfo.getComplete());
+	// System.out.println(loadInfo.getFileSize() + "--"
+	// + loadInfo.getComplete());
+	// }
 
 };
