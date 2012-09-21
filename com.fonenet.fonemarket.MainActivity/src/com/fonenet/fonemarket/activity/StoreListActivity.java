@@ -68,27 +68,37 @@ public class StoreListActivity extends ListActivity {
 					} else if (msg.what == FoneConstValue.MESSAGE_HANDLE_WAHT_DOWNLOADSTARTCNF) {
 						LoadInfo loadInfo = (LoadInfo) msg.obj;
 						String urlstr = loadInfo.getUrlstring();
-						ProgressBar bar = ProgressBars.get(urlstr);
-						if (Buttons.get(urlstr) == null) {
+						Button button = Buttons.get(urlstr);
+						// ProgressBar bar = ProgressBars.get(urlstr);
+						if (button == null) {
 							Log.e("StoreListHandler", "button is null!!!");
 							super.handleMessage(msg);
 							return;
 						}
+						if (loadInfo.getFileSize() > 0) {
 
-						Buttons.get(urlstr).setEnabled(true);
+							button.setEnabled(true);
 
-						if (msg.arg1 == FoneConstValue.MESSAGE_HANDLE_ARG_DOWNLOADISPAUSE) {
+							if (msg.arg1 == FoneConstValue.MESSAGE_HANDLE_ARG_DOWNLOADISPAUSE) {
 
-							Buttons.get(urlstr).setText("xia zai");
-							Log.i("handle", "downloader is pause!");
+								button.setText("xia zai");
+								Log.i("handle", "downloader is pause!");
+							} else {
+								showProgress(loadInfo, urlstr,
+										(View) Buttons.get(urlstr));
+								button.setText("zan ting");
+							}
+
+							Log.i("handle",
+									"receive MESSAGE_HANDLE_WAHT_DOWNLOADSTARTCNF");
 						} else {
-							showProgress(loadInfo, urlstr,
-									(View) Buttons.get(urlstr));
-							Buttons.get(urlstr).setText("zan ting");
-						}
+							Log.e("StoreListHandler",
+									"loadInfo.getFileSize() <=0 !!!");
+							button.setText("xia zai");
+							button.setEnabled(true);
+							Buttons.remove(urlstr);
 
-						Log.i("handle",
-								"receive MESSAGE_HANDLE_WAHT_DOWNLOADSTARTCNF");
+						}
 
 					} else if (msg.what == FoneConstValue.MESSAGE_HANDLE_WAHT_DOWNLOADCONTINUE) {
 						Log.i("handle",
