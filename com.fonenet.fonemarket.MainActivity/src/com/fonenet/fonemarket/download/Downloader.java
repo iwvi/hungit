@@ -90,8 +90,8 @@ public class Downloader {
 			HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
 			connection.setRequestMethod("GET");
-			fileSize = connection.getContentLength();
 			connection.setConnectTimeout(5000);
+			fileSize = connection.getContentLength();
 
 			File file = new File(localfile);
 

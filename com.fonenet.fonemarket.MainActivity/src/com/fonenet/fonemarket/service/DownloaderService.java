@@ -238,9 +238,15 @@ public class DownloaderService extends Service {
 
 		// 得到下载信息类的个数组成集合
 		LoadInfo loadInfo = downloader.getDownloaderInfors();
+		if (loadInfo.getFileSize() > 0) {
+			// 调用方法开始下载
+			downloader.download();
+		} else {
+			downloader.delete(urlstr);
+			downloader.reset();
+			downloaders.remove(urlstr);
 
-		// 调用方法开始下载
-		downloader.download();
+		}
 		return loadInfo;
 	}
 
